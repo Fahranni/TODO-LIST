@@ -1,0 +1,85 @@
+
+ 
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: right;">
+  Logged in as {{ request.user.username }} |
+  <form action="{% url 'logout' %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary" style="margin-left: 0.5rem;">Logout</button>
+  </form>
+</div>
+
+
+
+<h2 style="text-align: center;">Todo List</h2>
+<form method="get" action="" class="mb-3">
+  <input type="text" name="q" placeholder="Title..." value="{{ query }}" />
+
+  <select name="status">
+    <option value="">All Status</option>
+    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>pending</option>
+    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>completed</option>
+  </select>
+
+  <select name="priority">
+    <option value="">All Priority</option>
+    <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>low</option>
+    <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>medium</option>
+    <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>high</option>
+  </select>
+
+  <select name="category">
+    <option value="">All Category</option>
+    <option value="work" {% if priority_filter == 'work' %}selected{% endif %}>work</option>
+    <option value="personal" {% if priority_filter == 'personal' %}selected{% endif %}>personal</option>
+    <option value="study" {% if priority_filter == 'study' %}selected{% endif %}>study</option>
+    <option value="shopping" {% if priority_filter == 'shopping' %}selected{% endif %}>shopping</option>
+    <option value="health" {% if priority_filter == 'health' %}selected{% endif %}>health</option>
+    
+  </select>
+
+ 
+
+  <button type="submit">Filter</button>
+</form>
+
+<a href="{% url 'todo:todo_create' %}" class="btn btn-primary">Create Todo</a>
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Category</th>
+      <th>Action</th>
+    </tr></thead>
+  <tbody>
+  {% for todo in todos %}
+    <tr>
+      <td>{{ todo.title }}</td>
+      <td>{{ todo.status }}</td>
+       <td>{{ todo.priority }}</td>
+       <td>{{ todo.category }}</td>
+      <td>
+        <a href="{% url 'todo:todo_update' todo.pk %}" class="btn btn-sm btn-warning me-1">Edit</a> |
+        <a href="{% url 'todo:todo_delete' todo.pk %}" class="btn btn-sm btn-danger">Delete</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="pagination">
+  {% if todos.has_previous %}
+    <a href="?page={{ todos.previous_page_number }}">Previous</a>
+  {% endif %}
+
+  <span>Page {{ todos.number }} of {{ todos.paginator.num_pages }}</span>
+
+  {% if todos.has_next %}
+    <a href="?page={{ todos.next_page_number }}">Next</a>
+  {% endif %}
+</div>
+{% endblock %}
